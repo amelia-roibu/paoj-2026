@@ -5,16 +5,6 @@ package com.pao.laboratory03.enums;
  *
  * Creează în acest pachet (lângă acest Main.java) un enum și apoi folosește-l aici.
  *
- * PASUL 1 — Creează enum-ul Priority.java (fișier separat în același pachet):
- *   - Constante: LOW, MEDIUM, HIGH, CRITICAL
- *   - Câmpuri private: int level, String color
- *   - Constructor privat: Priority(int level, String color)
- *   - Getteri: getLevel(), getColor()
- *   - Metodă abstractă: String getEmoji() — fiecare constantă o implementează diferit
- *     LOW → "🟢", MEDIUM → "🟡", HIGH → "🟠", CRITICAL → "🔴"
- *   - Valorile sugerate:
- *     LOW(1, "green"), MEDIUM(2, "yellow"), HIGH(3, "orange"), CRITICAL(4, "red")
- *
  * PASUL 2 — În acest Main.java:
  *   a) Parcurge toate valorile cu Priority.values() și afișează:
  *      "emoji name (level=X, color=Y)"
@@ -49,8 +39,36 @@ package com.pao.laboratory03.enums;
  */
 public class Main {
     public static void main(String[] args) {
-        // TODO: implementează pașii de mai sus
-        // Hint: creează mai întâi fișierul Priority.java în acest pachet
+        System.out.println("\n=== Toate prioritățile ===");
+
+        for (Priority p : Priority.values()) {
+            System.out.println(p.getEmoji() + " " + p.name() + " (level=" + p.getLevel() + " color=" +  p.getColor() + ")");
+        }
+
+        System.out.println("\n=== Switch pe prioritate ===");
+
+        switch (Priority.HIGH) {
+            case LOW: System.out.println("⚠️ Prioritate scazuta."); break;
+            case MEDIUM: System.out.println("⚠️ Prioritate medie."); break;
+            case HIGH: System.out.println("⚠️ Prioritate ridicata!"); break;
+            case CRITICAL: System.out.println("⚠️ Prioritate critica!!"); break;
+        }
+
+        System.out.println("\n=== valueOf ===");
+
+        Priority fromString = Priority.valueOf("HIGH");
+        System.out.println("Priority.valueOf(\"HIGH\") = " + fromString);
+
+        System.out.println("\n=== Comparare enum ===");
+
+        System.out.println("HIGH == HIGH? " + (fromString == Priority.HIGH));
+        System.out.println("HIGH == LOW? " + (fromString == Priority.LOW));
+
+        System.out.println("\n=== name() și ordinal() ===");
+
+        for(Priority p : Priority.values()){
+            System.out.println(p.name() + ": name=" + p.name() + ", ordinal=" + p.ordinal());
+        }
     }
 }
 
