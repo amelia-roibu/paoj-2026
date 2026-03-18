@@ -1,5 +1,10 @@
 package com.pao.laboratory03.bonus;
 
+import com.pao.laboratory03.bonus.service.TaskService;
+import com.pao.laboratory03.bonus.model.*;
+import com.pao.laboratory03.bonus.exception.*;
+import java.util.*;
+
 /**
  * Exercițiul 5 (Bonus) — Sistem de gestiune task-uri cu audit log
  *
@@ -155,9 +160,72 @@ package com.pao.laboratory03.bonus;
  */
 public class Main {
     public static void main(String[] args) {
-        // TODO: implementează toți cei 10 pași de mai sus
-        // Creează TOATE clasele necesare în acest pachet (bonus/)
-        // Nu ai subpachete impuse — organizează cum consideri
+        TaskService service = TaskService.getInstance();
+
+        System.out.println("=== Adăugare task-uri ===");
+        System.out.println("Adăugat: " + service.addTask("Fix login bug", Priority.CRITICAL));
+        System.out.println("Adăugat: " + service.addTask("Add dark mode", Priority.LOW));
+        System.out.println("Adăugat: " + service.addTask("Update docs", Priority.MEDIUM));
+        System.out.println("Adăugat: " + service.addTask("Fix memory leak", Priority.HIGH));
+        System.out.println("Adăugat: " + service.addTask("Refactor DB layer", Priority.HIGH));
+        System.out.println();
+
+        System.out.println("=== Asignare ===");
+        service.assignTask("T001", "Ana");
+        System.out.println("T001 → Ana");
+        service.assignTask("T003", "Mihai");
+        System.out.println("T003 → Mihai");
+        service.assignTask("T004", "Elena");
+        System.out.println("T004 → Elena");
+        System.out.println();
+
+        System.out.println("=== Schimbări status ===");
+        System.out.print("T001: TODO → IN_PROGRESS ");
+        service.changeStatus("T001", Status.IN_PROGRESS);
+        System.out.println("✓");
+        System.out.print("T001: IN_PROGRESS → DONE ");
+        service.changeStatus("T001", Status.DONE);
+        System.out.println("✓");
+        System.out.print("T003: TODO → IN_PROGRESS ");
+        service.changeStatus("T003", Status.IN_PROGRESS);
+        System.out.println("✓");
+
+        try {
+            System.out.print("T001: DONE → TODO → ");
+            service.changeStatus("T001", Status.TODO);
+        } catch (InvalidTransitionException e) {
+            System.out.println("InvalidTransitionException: " + e.getMessage());
+        }
+        System.out.println();
+
+        System.out.println("=== Task-uri HIGH ===");
+        service.getTasksByPriority(Priority.HIGH).forEach(System.out::println);
+        System.out.println();
+
+        System.out.println("=== Sumar status ===");
+        service.getStatusSummary().forEach((status, count) ->
+                System.out.println(status + ": " + count));
+        System.out.println();
+
+        System.out.println("=== Task-uri neasignate ===");
+        service.getUnassignedTasks().forEach(t ->
+                System.out.println(t.getId() + ": " + t.getTitle()));
+        System.out.println();
+
+        System.out.println("=== Scor urgență (baseDays=5) ===");
+        System.out.println("Total: " + service.getTotalUrgencyScore(5));
+        System.out.println();
+
+        System.out.println("=== Audit Log ===");
+        service.printAuditLog();
+        System.out.println();
+
+        System.out.println("=== Test TaskNotFoundException ===");
+        try {
+            service.assignTask("T999", "Nimeni");
+        } catch (TaskNotFoundException e) {
+            System.out.println("TaskNotFoundException: " + e.getMessage());
+        }
     }
 }
 
