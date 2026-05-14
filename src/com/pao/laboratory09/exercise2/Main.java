@@ -52,23 +52,23 @@ public class Main {
                 String data = tokens[2];
                 TipTranzactie tip = TipTranzactie.valueOf(tokens[3]);
 
-                // Offset 0 (4 bytes): id -> little-endian
+                // Offset 0 (4 bytes): id
                 byte[] idBytes = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt(id).array();
                 dos.write(idBytes);
 
-                // Offset 4 (8 bytes): suma -> little-endian
+                // Offset 4 (8 bytes): suma
                 byte[] sumaBytes = ByteBuffer.allocate(8).order(ByteOrder.LITTLE_ENDIAN).putDouble(suma).array();
                 dos.write(sumaBytes);
 
-                // Offset 12 (10 bytes): data -> ASCII (paddat cu spații dacă e nevoie)
+                // Offset 12 (10 bytes): data (paddat cu spatii daca e nevoie)
                 StringBuilder sbData = new StringBuilder(data);
                 while (sbData.length() < 10) sbData.append(" ");
                 dos.write(sbData.toString().getBytes(StandardCharsets.US_ASCII));
 
-                // Offset 22 (1 byte): tip (0=CREDIT, 1=DEBIT)
+                // Offset 22 (1 byte): tip
                 dos.write(tip == TipTranzactie.CREDIT ? 0 : 1);
 
-                // Offset 23 (1 byte): status inițial (0=PENDING)
+                // Offset 23 (1 byte): status inițial
                 dos.write(Status.PENDING.ordinal());
 
                 // Offset 24 (8 bytes): padding de zerouri
@@ -79,7 +79,6 @@ public class Main {
             return;
         }
 
-        // 2. CITIREA ȘI ACTUALIZAREA cu RandomAccessFile
         try (RandomAccessFile raf = new RandomAccessFile(OUTPUT_FILE, "rw")) {
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine().trim();
@@ -123,7 +122,6 @@ public class Main {
         byte[] buffer = new byte[RECORD_SIZE];
         raf.readFully(buffer);
 
-        // Folosim ByteBuffer cu LITTLE_ENDIAN ca sa despachetam corect numerele
         ByteBuffer bb = ByteBuffer.wrap(buffer).order(ByteOrder.LITTLE_ENDIAN);
 
         int id = bb.getInt(); // extrage primii 4 octeți
